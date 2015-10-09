@@ -1,5 +1,5 @@
 class TicTacToe
-
+	@@winCon = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]]
 	attr_accessor :p1_name, :p2_name
 
 	def initialize
@@ -9,6 +9,7 @@ class TicTacToe
 		@p1 = Player.new("X")
 		@p2 = Player.new("O")
 		@playing = true
+		@winner = nil
 
 	end
 
@@ -25,16 +26,29 @@ class TicTacToe
 	end
 
 	def turn
-		@turn % 2 == 0 ? @p1 : @p2
+		@turn % 2 == 0 ? move(@p1) : move(@p2)
 	end
 
-	def move
-		who = turn
-		puts "#{who.name}, where would you like to move? (spaces 1-9)"
-		move = gets.chomp.to_i
-		@board[move-1] = who.symbol
-		@turn +=1
+	def move(player)
+		puts "#{player.name}, where would you like to move? (spaces 1-9)"
+		move = gets.chomp.to_i - 1
+		if valid(move)
+			@board[move] = player.symbol
+			@turn += 1
+		else
+			invalid(player)
+		end
 
+		victory?(player)
+	end
+
+	def valid(move)
+		move.between?(0,8) && @board[move] == "-"
+	end
+
+	def invalid(player)
+		puts "That is an invalid choice. Please go again"
+		turn
 	end
 
 
@@ -56,12 +70,38 @@ class TicTacToe
 		puts
 	end
 
+	def victory?(player)
+		@@winCon.each do |win|
+			if win.all? {|i| @board[i] == player.symbol}
+				@playing = false
+				@winner = player.name
+			end
+		end
+	end
+
+	def gameOver
+		if @winner
+			puts "Congratulations, #{@winner}! You won! Play again? (y/n)"
+		else
+			puts "It's a draw! Play again?(y/n)"
+		end
+		if gets.chomp == "y"
+			game = TicTacToe.new
+			game.play
+		else
+			puts "Thanks for playing!"
+			exit
+		end
+
+	end
+
 	def play
 		welcome
 		while @playing && @turn < 9
-			move
+			turn
 			display
 		end
+		gameOver
 	
 	end
 
@@ -77,6 +117,6 @@ class TicTacToe
 	end
 end
 
-test = TicTacToe.new
+game = TicTacToe.new
 
-test.play
+game.play
