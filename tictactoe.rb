@@ -25,21 +25,20 @@ class TicTacToe
 	end
 
 	def turn
-		@turn % 2 == 0 ? "X" : "O"
+		@turn % 2 == 0 ? @p1 : @p2
 	end
 
 	def move
-		puts "Where would you like to move? (spaces 1-9)"
+		who = turn
+		puts "#{who.name}, where would you like to move? (spaces 1-9)"
 		move = gets.chomp.to_i
-		whose = turn
-		@board[move-1] = turn
+		@board[move-1] = who.symbol
 		@turn +=1
 
-		display
 	end
 
 
-	def play
+	def welcome
 		puts "Welcome to command line Tic Tac Toe."
 		puts "Please enter Player One's name:"
 		@p1.name = gets.chomp
@@ -47,6 +46,22 @@ class TicTacToe
 		puts "Please enter Player Two's name:"
 		@p2.name = gets.chomp
 		puts "Thank you #{@p2.name}. You are O."
+		puts "To play, enter a space nubmer. Player one will go first."
+		puts "The spaces are:"
+		puts "1 | 2 | 3"
+		puts "___________"
+		puts "4 | 5 | 6"
+		puts "___________"
+		puts "7 | 8 | 9"
+		puts
+	end
+
+	def play
+		welcome
+		while @playing && @turn < 9
+			move
+			display
+		end
 	
 	end
 
@@ -65,5 +80,3 @@ end
 test = TicTacToe.new
 
 test.play
-test.move
-test.move
